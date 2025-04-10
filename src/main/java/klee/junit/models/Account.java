@@ -1,5 +1,7 @@
 package klee.junit.models;
 
+import klee.junit.exceptions.InsufficientMoneyException;
+
 import java.math.BigDecimal;
 
 public class Account {
@@ -28,7 +30,12 @@ public class Account {
     }
 
     public void debit(BigDecimal amount) {
-        this.balance = this.balance.subtract(amount);
+        BigDecimal newBalance = this.balance.subtract(amount);
+
+        if (newBalance.compareTo(BigDecimal.ZERO) < 0)
+            throw new InsufficientMoneyException("Insufficient Money");
+
+        this.balance = newBalance;
     }
 
     public void credit(BigDecimal amount) {

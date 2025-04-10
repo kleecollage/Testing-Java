@@ -1,5 +1,6 @@
 package klee.junit.models;
 
+import klee.junit.exceptions.InsufficientMoneyException;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -53,6 +54,15 @@ class AccountTest {
         assertEquals("1100.12345", account.getBalance().toPlainString());
     }
 
-
+    @Test
+    void testInsufficientMoneyException() {
+        Account account = new Account("John Doe", new BigDecimal("1000.12345"));
+        Exception e = assertThrows(InsufficientMoneyException.class, () -> {
+            account.debit(new BigDecimal(1500));
+        });
+        String expected = "Insufficient Money";
+        String actual = e.getMessage();
+        assertEquals(expected, actual);
+    }
 }
 
