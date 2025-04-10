@@ -14,9 +14,10 @@ class AccountTest {
         // account.setPerson("John Doe");
         String expected = "John Doe";
         String actual = account.getPerson();
-        assertNotNull(actual);
-        assertEquals(expected, actual);
-        assertTrue(actual.equals("John Doe"));
+        // Using lambdas in messages saves memory, since it doesn't create all of them.
+        assertNotNull(actual, () -> "Account cannot be null");
+        assertTrue(actual.equals("John Doe"), () -> "Account name must be equal to actual");
+        assertEquals(expected, actual, () -> "Expected " + expected + " but got " + actual);
     }
 
     @Test
@@ -86,20 +87,24 @@ class AccountTest {
         bank.setName("Santander");
 
         bank.transfer(account2, account1, new BigDecimal("500"));
-
-        assertEquals("1000.8989", account2.getBalance().toPlainString());
-        assertEquals("3000", account1.getBalance().toPlainString());
-
-        assertEquals(2, bank.getAccounts().size());
-        assertEquals("Santander", account1.getBank().getName());
-        assertEquals("John Doe", bank.getAccounts().stream()
-                .filter(a -> a.getPerson().equals("John Doe"))
-                .findFirst()
-                .get().getPerson());
-        assertTrue(bank.getAccounts().stream()
-                // .filter(a -> a.getPerson().equals("John Doe"))
-                // .findFirst().isPresent()
-                .anyMatch(a -> a.getPerson().equals("Jane Smith")));
+        assertAll(
+                () -> assertEquals("1000.8989", account2.getBalance().toPlainString(),
+                        () -> "Balance value in account2 is not the expected"),
+                () -> assertEquals("3000", account1.getBalance().toPlainString(),
+                        () -> "Balance value in account1 is not the expected"),
+                () -> assertEquals(2, bank.getAccounts().size(),
+                        () -> "Bank does not have the expected number of accounts"),
+                () -> assertEquals("Santander", account1.getBank().getName()),
+                // Relation getPerson from Bank (2 methods)
+                () -> assertEquals("John Doe", bank.getAccounts().stream()
+                            .filter(a -> a.getPerson().equals("John Doe"))
+                            .findFirst()
+                            .get().getPerson()),
+                () -> assertTrue(bank.getAccounts().stream()
+                        // .filter(a -> a.getPerson().equals("John Doe"))
+                        // .findFirst().isPresent()
+                        .anyMatch(a -> a.getPerson().equals("Jane Smith")))
+        );
     }
 }
 
