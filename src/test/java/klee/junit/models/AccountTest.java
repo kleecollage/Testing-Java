@@ -64,5 +64,42 @@ class AccountTest {
         String actual = e.getMessage();
         assertEquals(expected, actual);
     }
+
+    @Test
+    void testTransferMoneyAccounts() {
+        Account account1 = new Account("John Doe", new BigDecimal("2500"));
+        Account account2 = new Account("Jane Smith", new BigDecimal("1500.8989"));
+        var bank = new Bank();
+        bank.setName("Santander");
+        bank.transfer(account2, account1, new BigDecimal("500"));
+        assertEquals("1000.8989", account2.getBalance().toPlainString());
+        assertEquals("3000", account1.getBalance().toPlainString());
+    }
+
+    @Test
+    void testRelationBankAccounts() {
+        Account account1 = new Account("John Doe", new BigDecimal("2500"));
+        Account account2 = new Account("Jane Smith", new BigDecimal("1500.8989"));
+        var bank = new Bank();
+        bank.addAccount(account1);
+        bank.addAccount(account2);
+        bank.setName("Santander");
+
+        bank.transfer(account2, account1, new BigDecimal("500"));
+
+        assertEquals("1000.8989", account2.getBalance().toPlainString());
+        assertEquals("3000", account1.getBalance().toPlainString());
+
+        assertEquals(2, bank.getAccounts().size());
+        assertEquals("Santander", account1.getBank().getName());
+        assertEquals("John Doe", bank.getAccounts().stream()
+                .filter(a -> a.getPerson().equals("John Doe"))
+                .findFirst()
+                .get().getPerson());
+        assertTrue(bank.getAccounts().stream()
+                // .filter(a -> a.getPerson().equals("John Doe"))
+                // .findFirst().isPresent()
+                .anyMatch(a -> a.getPerson().equals("Jane Smith")));
+    }
 }
 
