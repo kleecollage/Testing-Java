@@ -1,6 +1,8 @@
 package klee.junit.models;
 
 import klee.junit.exceptions.InsufficientMoneyException;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -9,7 +11,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AccountTest {
     @Test
-    void test_name_account() {
+    @DisplayName("testing account name")
+    void testNameAccount() {
         var account = new Account("John Doe", new BigDecimal("1000.12345"));
         // account.setPerson("John Doe");
         String expected = "John Doe";
@@ -21,6 +24,7 @@ class AccountTest {
     }
 
     @Test
+    @DisplayName("testing account balance should not be null or lower than zero")
     void testAccountBBalance() {
         Account account = new Account("John Doe", new BigDecimal("1000.12345"));
         assertNotNull(account.getBalance());
@@ -30,6 +34,7 @@ class AccountTest {
     }
 
     @Test
+    @DisplayName("testing references to be equals with equal method")
     void testAccountReference() {
         Account account = new Account("John Doe", new BigDecimal("8900.9997"));
         Account account2 = new Account("John Doe", new BigDecimal("8900.9997"));
@@ -67,7 +72,9 @@ class AccountTest {
     }
 
     @Test
+    @Disabled // Skip Test
     void testTransferMoneyAccounts() {
+        fail(); // We ensure the test fails
         Account account1 = new Account("John Doe", new BigDecimal("2500"));
         Account account2 = new Account("Jane Smith", new BigDecimal("1500.8989"));
         var bank = new Bank();
@@ -78,6 +85,7 @@ class AccountTest {
     }
 
     @Test
+    @DisplayName("testing relations between accounts and bank with assertAll")
     void testRelationBankAccounts() {
         Account account1 = new Account("John Doe", new BigDecimal("2500"));
         Account account2 = new Account("Jane Smith", new BigDecimal("1500.8989"));
