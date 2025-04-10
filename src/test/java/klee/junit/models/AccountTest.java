@@ -1,19 +1,41 @@
 package klee.junit.models;
 
 import klee.junit.exceptions.InsufficientMoneyException;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+// @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AccountTest {
+    // Global var
+    Account account;
+
+    @BeforeEach
+    void initMethodTest() {
+        this.account = new Account("John Doe", new BigDecimal("1000.12345"));
+        System.out.println("starting test method");
+    }
+
+    @AfterEach
+    void tearDown() {
+        System.out.println("finishing test method");
+    }
+
+    @BeforeAll
+    static void beforeAll() {
+        System.out.println("starting tests");
+    }
+
+    @AfterAll
+    static void afterAll() {
+        System.out.println("finishing tests");
+    }
+
     @Test
     @DisplayName("testing account name")
     void testNameAccount() {
-        var account = new Account("John Doe", new BigDecimal("1000.12345"));
         // account.setPerson("John Doe");
         String expected = "John Doe";
         String actual = account.getPerson();
@@ -25,8 +47,7 @@ class AccountTest {
 
     @Test
     @DisplayName("testing account balance should not be null or lower than zero")
-    void testAccountBBalance() {
-        Account account = new Account("John Doe", new BigDecimal("1000.12345"));
+    void testAccountBalance() {
         assertNotNull(account.getBalance());
         assertEquals(1000.12345, account.getBalance().doubleValue());
         assertFalse(account.getBalance().compareTo(BigDecimal.ZERO) < 0); // -1 = False
@@ -44,7 +65,6 @@ class AccountTest {
 
     @Test
     void testDebitAccount() {
-        Account account = new Account("John Doe", new BigDecimal("1000.12345"));
         account.debit(new BigDecimal(100));
         assertNotNull(account.getBalance());
         assertEquals(900, account.getBalance().intValue());
@@ -53,7 +73,6 @@ class AccountTest {
 
     @Test
     void testCreditAccount() {
-        Account account = new Account("John Doe", new BigDecimal("1000.12345"));
         account.credit(new BigDecimal(100));
         assertNotNull(account.getBalance());
         assertEquals(1100, account.getBalance().intValue());
@@ -62,7 +81,6 @@ class AccountTest {
 
     @Test
     void testInsufficientMoneyException() {
-        Account account = new Account("John Doe", new BigDecimal("1000.12345"));
         Exception e = assertThrows(InsufficientMoneyException.class, () -> {
             account.debit(new BigDecimal(1500));
         });
