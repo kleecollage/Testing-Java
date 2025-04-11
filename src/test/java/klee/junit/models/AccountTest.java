@@ -72,7 +72,7 @@ class AccountTest {
     }
 
     @Nested
-    class OperationsTests {
+    class AccountOperationsTests {
         @Test
         void testDebitAccount() {
             account.debit(new BigDecimal(100));
@@ -100,22 +100,6 @@ class AccountTest {
             bank.transfer(account2, account1, new BigDecimal("500"));
             assertEquals("1000.8989", account2.getBalance().toPlainString());
             assertEquals("3000", account1.getBalance().toPlainString());
-        }
-
-        @Test
-        void testTransferMoneyAccountsDev() {
-            boolean isDev = "dev".equals(System.getProperty("ENV"));
-            // assumeTrue(isDev);
-            assumingThat(isDev, () -> {
-                Account account1 = new Account("John Doe", new BigDecimal("2500"));
-                Account account2 = new Account("Jane Smith", new BigDecimal("1500.8989"));
-                var bank = new Bank();
-                bank.setName("Santander");
-                bank.transfer(account2, account1, new BigDecimal("500"));
-                assertEquals("1000.8989", account2.getBalance().toPlainString());
-                assertEquals("3000", account1.getBalance().toPlainString());
-            });
-            // Here can go more asserts
         }
     }
 
@@ -264,6 +248,31 @@ class AccountTest {
         }
     }
 
+    @Test
+    void testTransferMoneyAccountsDev() {
+        boolean isDev = "dev".equals(System.getProperty("ENV"));
+        // assumeTrue(isDev);
+        assumingThat(isDev, () -> {
+            Account account1 = new Account("John Doe", new BigDecimal("2500"));
+            Account account2 = new Account("Jane Smith", new BigDecimal("1500.8989"));
+            var bank = new Bank();
+            bank.setName("Santander");
+            bank.transfer(account2, account1, new BigDecimal("500"));
+            assertEquals("1000.8989", account2.getBalance().toPlainString());
+            assertEquals("3000", account1.getBalance().toPlainString());
+        });
+        // Here can go more asserts
+    }
 
+    @DisplayName("Multiple Tests on Debit Account")
+    @RepeatedTest(value = 5, name = "{displayName} - Repetition no. {currentRepetition} of {totalRepetitions}" )
+    void testDebitAccountRepeat(RepetitionInfo info) {
+        if (info.getCurrentRepetition() == 3) {
+            System.out.println("We are on repetition " + info.getCurrentRepetition());
+        }
+        account.debit(new BigDecimal(100));
+        assertNotNull(account.getBalance());
+        assertEquals(900, account.getBalance().intValue());
+        assertEquals("900.12345", account.getBalance().toPlainString());
+    }
 }
-
