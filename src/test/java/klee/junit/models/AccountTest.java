@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.*;
 
 // @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AccountTest {
@@ -225,6 +226,23 @@ class AccountTest {
     @Test
     @DisabledIfEnvironmentVariable(named = "ENVIRONMENT", matches = "prod")
     void testEnvProdDisabled() {
+    }
+
+
+    @Test
+    void testTransferMoneyAccountsDev() {
+        boolean isDev = "dev".equals(System.getProperty("ENV"));
+        // assumeTrue(isDev);
+        assumingThat(isDev, () -> {
+                    Account account1 = new Account("John Doe", new BigDecimal("2500"));
+                    Account account2 = new Account("Jane Smith", new BigDecimal("1500.8989"));
+                    var bank = new Bank();
+                    bank.setName("Santander");
+                    bank.transfer(account2, account1, new BigDecimal("500"));
+                    assertEquals("1000.8989", account2.getBalance().toPlainString());
+                    assertEquals("3000", account1.getBalance().toPlainString());
+        });
+        // Here can go more asserts
     }
 }
 
