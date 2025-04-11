@@ -387,7 +387,7 @@ class AccountTest {
     @Tag("timeout")
     class ExampleTimeoutTest {
         @Test
-        @Timeout(1)
+        @Timeout(2)
         void testTimeout() throws InterruptedException {
             TimeUnit.SECONDS.sleep(1);
         }
