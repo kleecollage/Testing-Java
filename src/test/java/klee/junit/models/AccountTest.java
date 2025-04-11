@@ -20,13 +20,19 @@ import static org.junit.jupiter.api.Assumptions.*;
 
 // @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AccountTest {
-    // Global var
+    // Global vars
     Account account;
+    private TestInfo testInfo;
+    private TestReporter testReporter;
 
     @BeforeEach
-    void initMethodTest() {
+    void initMethodTest(TestInfo info, TestReporter reporter) {
         this.account = new Account("John Doe", new BigDecimal("1000.12345"));
+        this.testInfo = info;
+        this.testReporter = reporter;
         System.out.println("starting test method");
+        reporter.publishEntry("Executing: " + info.getDisplayName() + ". Method: " +
+                info.getTestMethod().orElse(null).getName() + " with tags " + info.getTags());
     }
 
     @AfterEach
@@ -51,6 +57,9 @@ class AccountTest {
         @Test
         @DisplayName("testing name")
         void testNameAccount() {
+            testReporter.publishEntry(testInfo.getTags().toString());
+            if (testInfo.getTags().contains("account"))
+                testReporter.publishEntry("do something with tag account");
             // account.setPerson("John Doe");
             String expected = "John Doe";
             String actual = account.getPerson();
