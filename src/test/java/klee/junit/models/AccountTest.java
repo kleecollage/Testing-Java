@@ -44,6 +44,7 @@ class AccountTest {
         System.out.println("finishing tests");
     }
 
+    @Tag("account")
     @Nested
     @DisplayName("testing account attributes")
     class AccountTestNameAndBalance {
@@ -80,6 +81,7 @@ class AccountTest {
 
     @Nested
     class AccountOperationsTests {
+        @Tag("account")
         @Test
         void testDebitAccount() {
             account.debit(new BigDecimal(100));
@@ -88,6 +90,7 @@ class AccountTest {
             assertEquals("900.12345", account.getBalance().toPlainString());
         }
 
+        @Tag("account")
         @Test
         void testCreditAccount() {
             account.credit(new BigDecimal(100));
@@ -96,6 +99,8 @@ class AccountTest {
             assertEquals("1100.12345", account.getBalance().toPlainString());
         }
 
+        @Tag("account")
+        @Tag("bank")
         @Test
         @Disabled // Skip Test
         void testTransferMoneyAccounts() {
@@ -111,6 +116,8 @@ class AccountTest {
     }
 
     @Test
+    @Tag("account")
+    @Tag("error")
     void testInsufficientMoneyException() {
         Exception e = assertThrows(InsufficientMoneyException.class, () -> {
             account.debit(new BigDecimal(1500));
@@ -121,6 +128,8 @@ class AccountTest {
     }
 
     @Test
+    @Tag("account")
+    @Tag("bank")
     @DisplayName("testing relations between accounts and bank with assertAll")
     void testRelationBankAccounts() {
         Account account1 = new Account("John Doe", new BigDecimal("2500"));
@@ -283,6 +292,7 @@ class AccountTest {
         assertEquals("900.12345", account.getBalance().toPlainString());
     }
 
+    @Tag("param")
     @Nested
     class ParameterizedTests {
         @ParameterizedTest(name = "no. {index} executing with value {0} - {argumentsWithNames}")
@@ -347,6 +357,7 @@ class AccountTest {
         }
     }
 
+    @Tag("param")
     @ParameterizedTest(name = "no. {index} executing with {argumentsWithNames}")
     @MethodSource("amountList")
     void testDebitAccountMethodSource(String amount) {
