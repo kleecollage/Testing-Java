@@ -2,8 +2,10 @@ package klee.junit.models;
 
 import klee.junit.exceptions.InsufficientMoneyException;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.*;
 
 import java.math.BigDecimal;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -131,6 +133,72 @@ class AccountTest {
                         // .findFirst().isPresent()
                         .anyMatch(a -> a.getPerson().equals("Jane Smith")))
         );
+    }
+
+    @Test
+    @EnabledOnOs(OS.WINDOWS)
+    void testOnlyWindows() {
+    }
+
+    @Test
+    @EnabledOnOs({OS.LINUX, OS.MAC})
+    void testOnlyLinuxMac() {
+    }
+
+    @Test
+    @DisabledOnOs(OS.WINDOWS)
+    void testNoWindows() {
+    }
+
+    @Test
+    @DisabledOnOs({OS.LINUX, OS.MAC})
+    void testNoLinuxMac() {
+    }
+
+    @Test
+    @EnabledOnJre(JRE.JAVA_8)
+    void testOnlyJdk8() {
+    }
+
+    @Test
+    @EnabledOnJre(JRE.JAVA_21)
+    void testOnlyJdk21() {
+    }
+
+    @Test
+    @DisabledOnJre(JRE.JAVA_21)
+    void testNoJdk21() {
+    }
+
+    @Test
+    void printSystemProperties() {
+        Properties properties = System.getProperties();
+        properties.forEach((k, v) -> System.out.println(k + ":" + v));
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = "java.version", matches = ".*21.*")
+    void testJavaVersion() {
+    }
+
+    @Test
+    @DisabledIfSystemProperty(named = "os.arch", matches = ".*32.*")
+    void testOnly64x() {
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = "os.arch", matches = ".*32.*")
+    void testNo64x() {
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = "user.name", matches = "mrrobot")
+    void testUserName() {
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = "ENV", matches = "dev")
+    void testDev() {
     }
 }
 
