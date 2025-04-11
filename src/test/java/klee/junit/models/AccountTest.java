@@ -10,10 +10,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
@@ -50,6 +52,7 @@ class AccountTest {
         System.out.println("finishing tests");
     }
 
+    /* ####################   ACCOUNT ATTRIBUTES TESTS   #################### */
     @Tag("account")
     @Nested
     @DisplayName("testing account attributes")
@@ -88,6 +91,7 @@ class AccountTest {
         }
     }
 
+    /* ####################   ACCOUNT OPERATIONS TESTS   #################### */
     @Nested
     class AccountOperationsTests {
         @Tag("account")
@@ -377,6 +381,29 @@ class AccountTest {
 
     static List<String> amountList() {
         return Arrays.asList("100", "200", "300", "500", "700", "1000.12345");
+    }
+
+    @Nested
+    @Tag("timeout")
+    class ExampleTimeoutTest {
+        @Test
+        @Timeout(1)
+        void testTimeout() throws InterruptedException {
+            TimeUnit.SECONDS.sleep(1);
+        }
+
+        @Test
+        @Timeout(value = 1100, unit = TimeUnit.MILLISECONDS)
+        void testTimeout2() throws InterruptedException {
+            TimeUnit.MILLISECONDS.sleep(1000);
+        }
+
+        @Test
+        void testTimeoutAssertions() {
+            assertTimeout(Duration.ofSeconds(5), () -> {
+                TimeUnit.MILLISECONDS.sleep(4999);
+            });
+        }
     }
 }
 
