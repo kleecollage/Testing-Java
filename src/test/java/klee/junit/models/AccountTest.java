@@ -3,8 +3,15 @@ package klee.junit.models;
 import klee.junit.exceptions.InsufficientMoneyException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -275,4 +282,64 @@ class AccountTest {
         assertEquals(900, account.getBalance().intValue());
         assertEquals("900.12345", account.getBalance().toPlainString());
     }
+
+    @ParameterizedTest(name = "no. {index} executing with value {0} - {argumentsWithNames}")
+    @ValueSource(strings = {"100", "200", "300", "500", "700", "1000.12345"})
+    void testDebitAccountValueSource(String amount) {
+        account.debit(new BigDecimal(amount));
+        assertNotNull(account.getBalance());
+        assertTrue(account.getBalance().compareTo(BigDecimal.ZERO) > 0);
+    }
+
+    @ParameterizedTest(name = "no. {index} executing with {argumentsWithNames}")
+    @ValueSource(doubles = {100, 200, 300, 500, 700, 1000})
+    void testDebitAccountValueSource(double amount) {
+        account.debit(new BigDecimal(amount));
+        assertNotNull(account.getBalance());
+        assertTrue(account.getBalance().compareTo(BigDecimal.ZERO) > 0);
+    }
+
+    @ParameterizedTest(name = "no. {index} executing with {argumentsWithNames}")
+    @CsvSource({"1,100", "2,200", "3,300", "4,500", "5,700", "6,1000.12345"})
+    void testDebitAccountCsvSource(String index, String amount) {
+        System.out.println(index + " -> " + amount);
+        account.debit(new BigDecimal(amount));
+        assertNotNull(account.getBalance());
+        assertTrue(account.getBalance().compareTo(BigDecimal.ZERO) > 0);
+    }
+
+    @ParameterizedTest(name = "no. {index} executing with {argumentsWithNames}")
+    @CsvFileSource(resources = "/data.csv")
+    void testDebitAccountCsvFileSource(String amount) {
+        account.debit(new BigDecimal(amount));
+        assertNotNull(account.getBalance());
+        assertTrue(account.getBalance().compareTo(BigDecimal.ZERO) > 0);
+    }
+
+    @ParameterizedTest(name = "no. {index} executing with {argumentsWithNames}")
+    @MethodSource("amountList")
+    void testDebitAccountMethodSource(String amount) {
+        account.debit(new BigDecimal(amount));
+        assertNotNull(account.getBalance());
+        assertTrue(account.getBalance().compareTo(BigDecimal.ZERO) > 0);
+    }
+
+    static List<String> amountList() {
+        return Arrays.asList("100", "200", "300", "500", "700", "1000.12345");
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
