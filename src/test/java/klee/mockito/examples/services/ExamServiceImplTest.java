@@ -6,6 +6,8 @@ import klee.mockito.examples.repositories.IQuestionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatcher;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
@@ -140,6 +142,51 @@ class ExamServiceImplTest {
         assertEquals(IllegalArgumentException.class, exception.getClass());
         verify(repository, times(1)).findAll();
         verify(questionRepository, times(1)).findQuestionsByExamId(isNull());
+    }
+
+    @Test
+    void testArgumentMatchers() {
+        when(repository.findAll()).thenReturn(Data.EXAMS);
+        when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Data.QUESTIONS);
+        service.findExamByNameWithQuestions("Math");
+        verify(repository, times(1)).findAll();
+        // verify(questionRepository).findQuestionsByExamId(argThat(arg -> arg != null && arg.equals(5L)));
+        // verify(questionRepository).findQuestionsByExamId(argThat(arg -> arg != null && arg >= 5L));
+        verify(questionRepository).findQuestionsByExamId(eq(5L));
+    }
+
+    @Test
+    void testArgumentMatchers2() {
+        when(repository.findAll()).thenReturn(Data.EXAMS_ID_NEGATIVE);
+        when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Data.QUESTIONS);
+        service.findExamByNameWithQuestions("Math");
+        verify(repository, times(1)).findAll();
+        verify(questionRepository).findQuestionsByExamId(argThat(new MyArgsMatchers()));
+    }
+
+    @Test
+    void testArgumentMatchers3() {
+        when(repository.findAll()).thenReturn(Data.EXAMS_ID_NEGATIVE);
+        when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Data.QUESTIONS);
+        service.findExamByNameWithQuestions("Math");
+        verify(repository, times(1)).findAll();
+        verify(questionRepository).findQuestionsByExamId(argThat((aLong) -> aLong != null && aLong > 0));
+    }
+
+    public static class MyArgsMatchers implements ArgumentMatcher<Long> {
+        private Long argument;
+
+        @Override
+        public boolean matches(Long aLong) {
+            this.argument = aLong;
+            return aLong != null && aLong > 0;
+        }
+
+        @Override
+        public String toString() {
+            return "this is a custom error message that mockito prints if the test fails '" +
+                    argument + "' should be a positive integer";
+        }
     }
 }
 
