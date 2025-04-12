@@ -4,7 +4,6 @@ import klee.mockito.examples.models.Exam;
 import klee.mockito.examples.repositories.ExamRepository;
 import klee.mockito.examples.repositories.QuestionRepository;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
