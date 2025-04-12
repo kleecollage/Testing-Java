@@ -35,4 +35,12 @@ public class ExamServiceImpl implements IExamService {
         }
         return exam;
     }
+
+    @Override
+    public Exam save(Exam exam) {
+        if (!exam.getQuestions().isEmpty())
+            questionRepository.saveMany(exam.getQuestions());
+
+        return examRepository.save(exam);
+    }
 }
