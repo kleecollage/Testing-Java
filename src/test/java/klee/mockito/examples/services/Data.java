@@ -19,4 +19,6 @@ public class Data {
             "trigonometry",
             "geometry"
     );
+
+    public final static Exam EXAM = new Exam(null, "Physics");
 }

@@ -8,7 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 
 import java.util.Collections;
 import java.util.List;
@@ -91,12 +93,42 @@ class ExamServiceImplTest {
         verify(questionRepository, times(1)).findQuestionsByExamId(anyLong());
     }
 
+    // GIVEN these conditions, WHEN execute these methods, THEN expect these results
     @Test
     void testNotExistExamVerify() {
+        // GIVEN
         when(repository.findAll()).thenReturn(Data.EXAMS);
         // when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Data.QUESTIONS); // not reached (unnecessary stub)
+        // WHEN
         Exam exam = service.findExamByNameWithQuestions("Math not");
+        // THEN
         assertNull(exam);
+    }
+
+    // GIVEN these conditions, WHEN execute these methods, THEN expect these results
+    @Test
+    void testSaveExam() {
+        // GIVEN
+        Exam newExam = Data.EXAM;
+        newExam.setQuestions(Data.QUESTIONS);
+        // simulation of auto incremental ID
+        when(repository.save(any(Exam.class))).then(new Answer<Exam>() {
+            Long sequence = 8L;
+            @Override
+            public Exam answer(InvocationOnMock invocationOnMock) throws Throwable {
+                Exam exam = invocationOnMock.getArgument(0);
+                exam.setId(sequence++);
+                return exam;
+            }
+        });
+        // WHEN
+        Exam exam = service.save(newExam);
+        // THEN
+        assertNotNull(exam.getId());
+        assertEquals(8L, exam.getId());
+        assertEquals("Physics", exam.getName());
+        verify(repository).save(any(Exam.class));
+        verify(questionRepository).saveMany(anyList());
     }
 }
 

@@ -9,6 +9,11 @@ import java.util.concurrent.TimeUnit;
 // WITH MOCKITO THIS CLASS IS UNNECESSARY //
 public class ExamRepositoryImpl implements IExamRepository {
     @Override
+    public Exam save(Exam exam) {
+        return null;
+    }
+
+    @Override
     public List<Exam> findAll() {
         try {
             System.out.println("ExamRepositoryImpl.findAll");
