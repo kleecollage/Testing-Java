@@ -130,6 +130,17 @@ class ExamServiceImplTest {
         verify(repository).save(any(Exam.class));
         verify(questionRepository).saveMany(anyList());
     }
+
+    @Test
+    void testHandleException() {
+        when(repository.findAll()).thenReturn(Data.EXAMS_ID_NULL);
+        when(questionRepository.findQuestionsByExamId(isNull())).thenThrow(IllegalArgumentException.class); // null = parameter not allowed
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                service.findExamByNameWithQuestions("Math"));
+        assertEquals(IllegalArgumentException.class, exception.getClass());
+        verify(repository, times(1)).findAll();
+        verify(questionRepository, times(1)).findQuestionsByExamId(isNull());
+    }
 }
 
 
