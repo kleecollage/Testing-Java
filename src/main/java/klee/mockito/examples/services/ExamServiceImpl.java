@@ -31,6 +31,7 @@ public class ExamServiceImpl implements IExamService {
         if (examOptional.isPresent()) {
             exam = examOptional.orElseThrow();
             List<String> questions = questionRepository.findQuestionsByExamId(exam.getId());
+            questionRepository.findQuestionsByExamId(exam.getId());
             exam.setQuestions(questions);
         }
         return exam;

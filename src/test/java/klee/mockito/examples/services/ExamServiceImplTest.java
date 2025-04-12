@@ -288,6 +288,44 @@ class ExamServiceImplTest {
         inOrder.verify(questionRepository).findQuestionsByExamId(6L);
     }
 
+    @Test
+    void testInvocationsNumber() {
+        when(repository.findAll()).thenReturn(Data.EXAMS);
+        service.findExamByNameWithQuestions("Math");
+        verify(questionRepository).findQuestionsByExamId(5L);
+        verify(questionRepository, times(1)).findQuestionsByExamId(5L);
+        verify(questionRepository, atLeast(1)).findQuestionsByExamId(5L);
+        verify(questionRepository, atLeastOnce()).findQuestionsByExamId(5L);
+        verify(questionRepository, atMost(10)).findQuestionsByExamId(5L);
+        verify(questionRepository, atMostOnce()).findQuestionsByExamId(5L);
+    }
+
+    @Test
+    void testInvocationsNumber2() {
+        when(repository.findAll()).thenReturn(Data.EXAMS);
+        service.findExamByNameWithQuestions("Math");
+        // verify(questionRepository).findQuestionsByExamId(5L); // fails
+        verify(questionRepository, times(2)).findQuestionsByExamId(5L);
+        verify(questionRepository, atLeast(2)).findQuestionsByExamId(5L);
+        verify(questionRepository, atLeastOnce()).findQuestionsByExamId(5L);
+        verify(questionRepository, atMost(20)).findQuestionsByExamId(5L);
+        // verify(questionRepository, atMostOnce()).findQuestionsByExamId(5L); // fails
+    }
+
+    @Test
+    void testInvocationsNumber3() {
+        when(repository.findAll()).thenReturn(Collections.emptyList());
+        service.findExamByNameWithQuestions("Math");
+        verify(questionRepository, never()).findQuestionsByExamId(anyLong());
+        verifyNoInteractions(questionRepository);
+        verify(repository).findAll();
+        verify(repository, times(1)).findAll();
+        verify(repository, atLeast(1)).findAll();
+        verify(repository, atLeastOnce()).findAll();
+        verify(repository, atMost(10)).findAll();
+        verify(repository, atMostOnce()).findAll();
+    }
+
     public static class MyArgsMatchers implements ArgumentMatcher<Long> {
         private Long argument;
 
