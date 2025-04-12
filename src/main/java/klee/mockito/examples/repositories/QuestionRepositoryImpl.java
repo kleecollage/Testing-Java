@@ -8,11 +8,11 @@ public class QuestionRepositoryImpl implements IQuestionRepository{
     @Override
     public List<String> findQuestionsByExamId(Long id) {
         System.out.println("QuestionRepositoryImpl.findQuestionsByExamId");
-        /* try {
+        try {
             TimeUnit.SECONDS.sleep(2);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
-        } */
+        }
         return Arrays.asList(
                 "arithmetic",
                 "integrals",

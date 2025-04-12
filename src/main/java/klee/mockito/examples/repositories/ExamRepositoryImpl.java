@@ -19,13 +19,13 @@ public class ExamRepositoryImpl implements IExamRepository {
     public List<Exam> findAll() {
         System.out.println("ExamRepositoryImpl.findAll");
         try {
-            TimeUnit.SECONDS.sleep(5);
+            TimeUnit.SECONDS.sleep(3);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
 
         return Arrays.asList(
-                new Exam(5L, "Maths"),
+                new Exam(5L, "Math"),
                 new Exam(6L, "English"),
                 new Exam(7L, "History")
         );

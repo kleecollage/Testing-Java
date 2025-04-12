@@ -14,6 +14,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -242,6 +243,27 @@ class ExamServiceImplTest {
         Exam exam = service.findExamByNameWithQuestions("Math");
         assertEquals(5L, exam.getId());
         assertEquals("Math", exam.getName());
+    }
+
+    @Test
+    void testSpy() {
+        IExamRepository examRepository = spy(ExamRepositoryImpl.class);
+        IQuestionRepository questionRepository = spy(QuestionRepositoryImpl.class);
+        IExamService examService = new ExamServiceImpl(examRepository, questionRepository);
+
+        List<String> questions = Arrays.asList("arithmetic");
+        // next line is called recursively, with spy doReturn is used instead
+        // when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(questions);
+        doReturn(questions).when(questionRepository).findQuestionsByExamId(anyLong());
+
+
+        Exam exam = examService.findExamByNameWithQuestions("Math");
+        assertEquals(5L, exam.getId());
+        assertEquals("Math", exam.getName());
+        assertEquals(1, exam.getQuestions().size());
+        assertTrue(exam.getQuestions().contains("arithmetic"));
+        verify(examRepository, times(1)).findAll();
+        verify(questionRepository, times(1)).findQuestionsByExamId(anyLong());
     }
 
     public static class MyArgsMatchers implements ArgumentMatcher<Long> {
