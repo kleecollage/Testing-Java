@@ -2,31 +2,33 @@ package klee.mockito.examples.repositories;
 
 import klee.mockito.examples.models.Exam;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-// WITH MOCKITO THIS CLASS IS UNNECESSARY //
+// WITH MOCKITO THIS CLASS IS UNNECESSARY (for testing)//
 public class ExamRepositoryImpl implements IExamRepository {
     @Override
     public Exam save(Exam exam) {
-        return null;
+        System.out.println("ExamRepositoryImpl.save");
+        return new Exam(null, "Physics");
     }
 
     @Override
     public List<Exam> findAll() {
+        System.out.println("ExamRepositoryImpl.findAll");
         try {
-            System.out.println("ExamRepositoryImpl.findAll");
             TimeUnit.SECONDS.sleep(5);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
-        /*return Arrays.asList(
+        return Arrays.asList(
                 new Exam(5L, "Maths"),
                 new Exam(6L, "English"),
                 new Exam(7L, "History")
-        );*/
-        return Collections.emptyList();
+        );
+        // return Collections.emptyList();
     }
 }

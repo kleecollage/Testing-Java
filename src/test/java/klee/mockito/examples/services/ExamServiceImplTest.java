@@ -1,8 +1,10 @@
 package klee.mockito.examples.services;
 
 import klee.mockito.examples.models.Exam;
+import klee.mockito.examples.repositories.ExamRepositoryImpl;
 import klee.mockito.examples.repositories.IExamRepository;
 import klee.mockito.examples.repositories.IQuestionRepository;
+import klee.mockito.examples.repositories.QuestionRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -22,9 +24,9 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ExamServiceImplTest {
     @Mock
-    IQuestionRepository questionRepository;
+    QuestionRepositoryImpl questionRepository;
     @Mock
-    IExamRepository repository;
+    ExamRepositoryImpl repository;
 
     @InjectMocks
     ExamServiceImpl service;
@@ -230,6 +232,16 @@ class ExamServiceImplTest {
         assertEquals("Physics", exam.getName());
         verify(repository).save(any(Exam.class));
         verify(questionRepository).saveMany(anyList());
+    }
+
+    @Test
+    void testDoCallRealMethod() {
+        when(repository.findAll()).thenReturn(Data.EXAMS);
+        // when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Data.QUESTIONS);
+        doCallRealMethod().when(questionRepository).findQuestionsByExamId(anyLong());
+        Exam exam = service.findExamByNameWithQuestions("Math");
+        assertEquals(5L, exam.getId());
+        assertEquals("Math", exam.getName());
     }
 
     public static class MyArgsMatchers implements ArgumentMatcher<Long> {
