@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 // WITH MOCKITO THIS CLASS IS UNNECESSARY //
-public class ExamRepositoryImpl implements ExamRepository{
+public class ExamRepositoryImpl implements IExamRepository {
     @Override
     public List<Exam> findAll() {
         try {
@@ -17,11 +17,11 @@ public class ExamRepositoryImpl implements ExamRepository{
             e.printStackTrace();
         }
 
-        return Collections.emptyList();
         /*return Arrays.asList(
                 new Exam(5L, "Maths"),
                 new Exam(6L, "English"),
                 new Exam(7L, "History")
         );*/
+        return Collections.emptyList();
     }
 }

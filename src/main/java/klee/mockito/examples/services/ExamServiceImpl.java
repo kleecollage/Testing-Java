@@ -1,17 +1,17 @@
 package klee.mockito.examples.services;
 
 import klee.mockito.examples.models.Exam;
-import klee.mockito.examples.repositories.ExamRepository;
-import klee.mockito.examples.repositories.QuestionRepository;
+import klee.mockito.examples.repositories.IExamRepository;
+import klee.mockito.examples.repositories.IQuestionRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public class ExamServiceImpl implements ExamService{
-    private final ExamRepository examRepository;
-    private final QuestionRepository questionRepository;
+public class ExamServiceImpl implements IExamService {
+    private final IExamRepository examRepository;
+    private final IQuestionRepository questionRepository;
 
-    public ExamServiceImpl(ExamRepository examRepository, QuestionRepository questionRepository) {
+    public ExamServiceImpl(IExamRepository examRepository, IQuestionRepository questionRepository) {
         this.examRepository = examRepository;
         this.questionRepository = questionRepository;
     }

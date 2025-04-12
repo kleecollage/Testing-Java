@@ -4,6 +4,6 @@ import klee.mockito.examples.models.Exam;
 
 import java.util.List;
 
-public interface ExamRepository {
+public interface IExamRepository {
     List<Exam> findAll();
 }
