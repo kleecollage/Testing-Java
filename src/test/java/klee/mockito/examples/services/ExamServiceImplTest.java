@@ -266,6 +266,28 @@ class ExamServiceImplTest {
         verify(questionRepository, times(1)).findQuestionsByExamId(anyLong());
     }
 
+    @Test
+    void testInvocationOrder() {
+        when(repository.findAll()).thenReturn(Data.EXAMS);
+        service.findExamByNameWithQuestions("Math");
+        service.findExamByNameWithQuestions("English");
+        InOrder inOrder = inOrder(questionRepository);
+        inOrder.verify(questionRepository).findQuestionsByExamId(5L);
+        inOrder.verify(questionRepository).findQuestionsByExamId(6L);
+    }
+
+    @Test
+    void testInvocationOrder2() {
+        when(repository.findAll()).thenReturn(Data.EXAMS);
+        service.findExamByNameWithQuestions("Math");
+        service.findExamByNameWithQuestions("English");
+        InOrder inOrder = inOrder(repository, questionRepository);
+        inOrder.verify(repository).findAll();
+        inOrder.verify(questionRepository).findQuestionsByExamId(5L);
+        inOrder.verify(repository).findAll();
+        inOrder.verify(questionRepository).findQuestionsByExamId(6L);
+    }
+
     public static class MyArgsMatchers implements ArgumentMatcher<Long> {
         private Long argument;
 
