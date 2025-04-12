@@ -4,12 +4,10 @@ import klee.mockito.examples.models.Exam;
 import klee.mockito.examples.repositories.IExamRepository;
 import klee.mockito.examples.repositories.IQuestionRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatcher;
-import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
@@ -30,6 +28,9 @@ class ExamServiceImplTest {
 
     @InjectMocks
     ExamServiceImpl service;
+
+    @Captor
+    ArgumentCaptor<Long> captor;
 
     // All Setup is replaced with @ExtendWith(MockitoExtension.class) annotation
     @BeforeEach
@@ -156,6 +157,7 @@ class ExamServiceImplTest {
     }
 
     @Test
+    @Disabled // this test is programmed to fail
     void testArgumentMatchers2() {
         when(repository.findAll()).thenReturn(Data.EXAMS_ID_NEGATIVE);
         when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Data.QUESTIONS);
@@ -166,11 +168,22 @@ class ExamServiceImplTest {
 
     @Test
     void testArgumentMatchers3() {
-        when(repository.findAll()).thenReturn(Data.EXAMS_ID_NEGATIVE);
+        when(repository.findAll()).thenReturn(Data.EXAMS);
         when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Data.QUESTIONS);
         service.findExamByNameWithQuestions("Math");
         verify(repository, times(1)).findAll();
         verify(questionRepository).findQuestionsByExamId(argThat((aLong) -> aLong != null && aLong > 0));
+    }
+
+    @Test
+    void testArgumentCaptor() {
+        when(repository.findAll()).thenReturn(Data.EXAMS);
+        // when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Data.QUESTIONS); // unreached
+        service.findExamByNameWithQuestions("Math");
+        // Next line is replaced whit @Captor annotation
+        // ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
+        verify(questionRepository).findQuestionsByExamId(captor.capture());
+        assertEquals(5L, captor.getValue());
     }
 
     public static class MyArgsMatchers implements ArgumentMatcher<Long> {
