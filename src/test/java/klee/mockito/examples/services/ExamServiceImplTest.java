@@ -186,6 +186,52 @@ class ExamServiceImplTest {
         assertEquals(5L, captor.getValue());
     }
 
+    @Test
+    void testDoThrow() {
+        Exam exam = Data.EXAM;
+        exam.setQuestions(Data.QUESTIONS);
+        // saveMany() is a void method and doThrow is for void methods //
+        doThrow(IllegalArgumentException.class).when(questionRepository).saveMany(anyList());
+        assertThrows(IllegalArgumentException.class, () -> service.save(exam));
+    }
+
+    @Test
+    void testDoAnswer() {
+        when(repository.findAll()).thenReturn(Data.EXAMS);
+        // when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Data.QUESTIONS);
+        doAnswer(invocation -> {
+            Long id = invocation.getArgument(0);
+            return id == 5L ? Data.QUESTIONS : Collections.emptyList();
+        }).when(questionRepository).findQuestionsByExamId(anyLong());
+
+        Exam exam = service.findExamByNameWithQuestions("Math");
+        assertTrue(exam.getQuestions().contains("geometry"));
+        assertEquals(5, exam.getQuestions().size());
+        assertEquals(5L, exam.getId());
+        verify(questionRepository, times(1)).findQuestionsByExamId(anyLong());
+    }
+
+    @Test
+    void testDoAnswerSaveExam() {
+        Exam newExam = Data.EXAM;
+        newExam.setQuestions(Data.QUESTIONS);
+        doAnswer(new Answer<Exam>() {
+            Long sequence = 8L;
+            @Override
+            public Exam answer(InvocationOnMock invocationOnMock) throws Throwable {
+                Exam exam = invocationOnMock.getArgument(0);
+                exam.setId(sequence++);
+                return exam;
+            }
+        }).when(repository).save(any(Exam.class));
+        Exam exam = service.save(newExam);
+        assertNotNull(exam.getId());
+        assertEquals(8L, exam.getId());
+        assertEquals("Physics", exam.getName());
+        verify(repository).save(any(Exam.class));
+        verify(questionRepository).saveMany(anyList());
+    }
+
     public static class MyArgsMatchers implements ArgumentMatcher<Long> {
         private Long argument;
 
